@@ -4,3 +4,4 @@ from .log import log_function_call
 from .settings import log_settings, runtime_settings
 from .functional import *
 from .utils import allclose
+from .version import __version__

@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='torch_1k', 
-    version='0.0.1', 
+    version='0.0.2', 
     packages=find_packages(),
     description='Mini-PyTorch within 1000 lines of code',
     install_requires = ['numpy', 'loguru'],
