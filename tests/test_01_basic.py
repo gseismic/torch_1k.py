@@ -23,12 +23,11 @@ def test_tensor_creator():
     b = B(a)
     y = C(b)
 
-    print(y)
-
+    # print(y)
     assert y.creator is C 
-    assert y.creator.input is b
-    assert y.creator.input.creator is B
-    assert y.creator.input.creator.input.creator is A
+    assert y.creator.inputs[0] is b
+    assert y.creator.inputs[0].creator is B
+    assert y.creator.inputs[0].creator.inputs[0].creator is A
 
 def test_backward():
     A = Square(log_enabled=False)
@@ -41,11 +40,11 @@ def test_backward():
 
     y.grad = np.array(1.0)
     assert y.creator is B
-    assert y.creator.input is a
-    assert y.creator.input.creator.input is x
+    assert y.creator.inputs[0] is a
+    assert y.creator.inputs[0].creator.inputs[0] is x
 
-    y.creator.input.grad = y.creator.backward(y.grad)
-    y.creator.input.creator.input.grad = y.creator.input.creator.backward(y.creator.input.grad)
+    y.creator.inputs[0].grad = y.creator.backward(y.grad)
+    y.creator.inputs[0].creator.inputs[0].grad = y.creator.inputs[0].creator.backward(y.creator.inputs[0].grad)
     # print(x)
     # 2*x*exp(x**2)
     # print(x.grad, 2*x.data*np.exp(x.data**2))
@@ -63,7 +62,7 @@ def test_auto_backward():
     # y.grad = np.array(1.0)
     y.backward()
 
-    print('by auto:', x.grad, 2*x.data*np.exp(x.data**2))
+    # print('by auto:', x.grad, 2*x.data*np.exp(x.data**2))
     # |x-y| < atol + rtol * |y|
     assert np.allclose(x.grad, 2*x.data*np.exp(x.data**2), rtol=1e-5,
                        atol=1e-8)

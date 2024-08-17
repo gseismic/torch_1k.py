@@ -18,6 +18,9 @@ class Tensor:
     def set_creator(self, func):
         self.creator = func
 
+    def zero_grad(self):
+        self.grad = None
+
     @log_function_call(enabled=True)
     def backward(self):
         if self.grad is None:
@@ -27,11 +30,20 @@ class Tensor:
         funcs = [self.creator]
         while funcs:
             f = funcs.pop()
-            x, y = f.input, f.output
-            x.grad = f.backward(y.grad)
+            gys = [output.grad for output in f.outputs]
+            gxs = f.backward(*gys)
+            if not isinstance(gxs, tuple):
+                gxs = (gxs, )
 
-            if x.creator is not None:
-                funcs.append(x.creator)
+            for x, gx in zip(f.inputs, gxs):
+                if x.grad is None:
+                    # in case of: y = x + x
+                    x.grad = gx
+                else:
+                    x.grad = x.grad + gx
+
+                if x.creator is not None:
+                    funcs.append(x.creator)
 
     def backward_v1(self):
         # recursive-mode
