@@ -2,12 +2,17 @@ import numpy as np
 from .utils import ensure_ndarray
 from .log import log_function_call
 from .settings import log_settings, runtime_settings, using_config
+from .ops import *
 
 
 class Tensor:
 
-    def __init__(self, data, log_enabled=None):
+    # 确保优先级高于np.ndarray的运算符
+    __array_priority__ = 200
+
+    def __init__(self, data, name=None, log_enabled=None):
         self.data = ensure_ndarray(data)
+        self.name = name
         if log_enabled is None:
             self.log_enabled = log_settings.get('tensor_log_enabled', False)
         else:
@@ -70,18 +75,43 @@ class Tensor:
                     for output in f.outputs:
                         output.grad = None
 
+    @property
     def shape(self):
         return self.data.shape
 
+    @property
     def ndim(self):
         return self.data.ndim
 
+    @property
+    def size(self):
+        # torch-like, 而不是self.data.size
+        return self.data.shape
+
+    @property
+    def dtype(self):
+        return self.data.dtype
+
     def __repr__(self):
         return (
-            f'Tensor({str(self.data)})'
+            f'Tensor({str(self.data)})[name={self.name}]'
             f'\n with grad={self.grad}'
         )
 
+
+Tensor.__neg__ = neg
+
+Tensor.__add__ = add
+Tensor.__radd__ = add
+Tensor.__sub__ = sub
+Tensor.__rsub__ = rsub
+
+Tensor.__mul__ = mul
+Tensor.__rmul__ = mul
+Tensor.__truediv__ = div
+Tensor.__rtruediv__ = rdiv
+
+Tensor.__pow__ = pow
 
 def no_grad():
     return using_config('enable_backprop', False)
