@@ -1,7 +1,7 @@
 import numpy as np
 from .utils import ensure_ndarray
 from .log import log_function_call
-from .settings import log_settings
+from .settings import log_settings, runtime_settings
 
 
 class Tensor:
@@ -41,7 +41,12 @@ class Tensor:
         add_func(self.creator)
         while funcs:
             f = funcs.pop() # pop the item with maximal generation
-            gys = [output.grad for output in f.outputs]
+            # weakref
+            # print(runtime_settings)
+            if runtime_settings.get('remove_recursive_ref', True):
+                gys = [output().grad for output in f.outputs]
+            else:
+                gys = [output.grad for output in f.outputs]
             gxs = f.backward(*gys)
             if not isinstance(gxs, tuple):
                 gxs = (gxs, )

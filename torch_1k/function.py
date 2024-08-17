@@ -1,7 +1,8 @@
 import numpy as np
+import weakref
 from .tensor import Tensor
 from .log import log_function_call
-from .settings import log_settings
+from .settings import log_settings, runtime_settings
 
 
 class Function:
@@ -26,8 +27,11 @@ class Function:
             output.set_creator(self)
 
         self.inputs = inputs
-        self.outputs = outputs
-
+        # 解除输出的循环引用
+        if runtime_settings.get('remove_recursive_ref', True):
+            self.outputs = [weakref.ref(output) for output in outputs]
+        else:
+            self.outputs = [output for output in outputs]
         return outputs[0] if len(outputs) == 1 else outputs
 
     def forward(self, x):
