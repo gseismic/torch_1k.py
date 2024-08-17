@@ -11,6 +11,7 @@ class Function:
             self.log_enabled = log_settings.get('func_log_enabled', False)
         else:
             self.log_enabled = log_enabled
+        self.generation = None
 
     def __call__(self, *inputs):
         xs = [input.data for input in inputs]
@@ -19,6 +20,8 @@ class Function:
             ys = (ys,)
 
         outputs = [Tensor(y) for y in ys]
+        # 更新`代`, 为所有输入代的最大值
+        self.generation = max([input.generation for input in inputs])
         for output in outputs:
             output.set_creator(self)
 
