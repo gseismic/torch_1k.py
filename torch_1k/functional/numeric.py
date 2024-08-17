@@ -1,5 +1,5 @@
 import numpy as np
-from .function import Function
+from ..function import Function
 
 
 # Square

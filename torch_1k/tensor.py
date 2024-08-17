@@ -2,7 +2,7 @@ import numpy as np
 from .utils import ensure_ndarray
 from .log import log_function_call
 from .settings import log_settings, runtime_settings, using_config
-from .functional import *
+from . import functional as F
 #import networkx as nx
 #import matplotlib.pyplot as plt
 
@@ -118,6 +118,22 @@ class Tensor:
                     for output in f.outputs:
                         output.grad = None
 
+    def reshape(self, *shape):
+        if len(shape) == 1 and isinstance(shape[0], (tuple,list)):
+            shape = shape[0]
+        return F.reshape(self, shape)
+
+    def transpose(self):
+        return F.transpose(self)
+
+    @property
+    def T(self):
+        '''
+        tensor.T 是 PyTorch 中对二维张量进行转置的简便方法，相当于 tensor.transpose(0, 1)。
+        对于三维或更高维张量，tensor.T 不会改变张量的形状。
+        '''
+        return F.transpose(self)
+
     @property
     def shape(self):
         return self.data.shape
@@ -138,24 +154,24 @@ class Tensor:
     def __repr__(self):
         return (
             f'Tensor({str(self.data)}, name={self.name}'
-            f',grad={self.grad})'
+            f', grad={self.grad})'
         )
 
 
 def register_ops():
-    Tensor.__neg__ = neg
+    Tensor.__neg__ = F.neg
 
-    Tensor.__add__ = add
-    Tensor.__radd__ = add
-    Tensor.__sub__ = sub
-    Tensor.__rsub__ = rsub
+    Tensor.__add__ = F.add
+    Tensor.__radd__ = F.add
+    Tensor.__sub__ = F.sub
+    Tensor.__rsub__ = F.rsub
 
-    Tensor.__mul__ = mul
-    Tensor.__rmul__ = mul
-    Tensor.__truediv__ = div
-    Tensor.__rtruediv__ = rdiv
+    Tensor.__mul__ = F.mul
+    Tensor.__rmul__ = F.mul
+    Tensor.__truediv__ = F.div
+    Tensor.__rtruediv__ = F.rdiv
 
-    Tensor.__pow__ = pow
+    Tensor.__pow__ = F.pow
 
 
 register_ops()
