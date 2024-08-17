@@ -2,7 +2,7 @@ import numpy as np
 import weakref
 from .tensor import Tensor
 from .log import log_function_call
-from .settings import log_settings, runtime_settings
+from .settings import log_settings, runtime_settings, Config
 
 
 class Function:
@@ -20,18 +20,22 @@ class Function:
         if not isinstance(ys, tuple):
             ys = (ys,)
 
+        # inputs 仅仅在反向传播时才需要，不反向传播时，不用保留
         outputs = [Tensor(y) for y in ys]
-        # 更新`代`, 为所有输入代的最大值
-        self.generation = max([input.generation for input in inputs])
-        for output in outputs:
-            output.set_creator(self)
+        # print(Config.enable_backprop)
+        if Config.enable_backprop:
+            # 更新`代`, 为所有输入代的最大值
+            self.generation = max([input.generation for input in inputs])
+            for output in outputs:
+                output.set_creator(self)
 
-        self.inputs = inputs
-        # 解除输出的循环引用
-        if runtime_settings.get('remove_recursive_ref', True):
-            self.outputs = [weakref.ref(output) for output in outputs]
-        else:
-            self.outputs = [output for output in outputs]
+            self.inputs = inputs
+            # 解除输出的循环引用
+            if runtime_settings.get('remove_recursive_ref', True):
+                self.outputs = [weakref.ref(output) for output in outputs]
+            else:
+                self.outputs = [output for output in outputs]
+
         return outputs[0] if len(outputs) == 1 else outputs
 
     def forward(self, x):

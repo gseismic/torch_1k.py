@@ -1,4 +1,5 @@
 import config
+import time
 import numpy as np
 import torch_1k
 from torch_1k import Tensor
@@ -42,7 +43,6 @@ def test_autograd_complex_graph():
 
 def test_autograd_memory():
     # from memory_profiler import memory_usage
-    import time
     def fun():
         for i in range(300):
             x = Tensor(np.random.randn(100000))
@@ -70,8 +70,30 @@ def test_autograd_memory():
     print(f'remove_recursive_ref=True: {t3 - t2 = }')
 
     assert t3 - t2 < t1 - t0
+    torch_1k.runtime_settings['remove_recursive_ref'] = True
     #mem_usage = memory_usage(func)
     #print(f"Memory usage: {mem_usage}")
+
+def test_autograd_no_grad():
+    torch_1k.runtime_settings['remove_recursive_ref'] = True
+    def fun():
+        for i in range(3):
+            x = Tensor(np.random.randn(100000))
+            x = square(square(square(x)))
+            x = square(square(square(x)))
+
+    # non-no_grad: t1 - t0 = 0.03579282760620117
+    # faster: no_grad: t1 - t0 = 0.03249096870422363
+    t0 = time.time()
+    fun()
+    t1 = time.time()
+    print(f'non-no_grad: {t1 - t0 = }')
+
+    t0 = time.time()
+    with torch_1k.no_grad():
+        fun()
+    t1 = time.time()
+    print(f'no_grad: {t1 - t0 = }')
 
 
 if __name__ == '__main__':
@@ -81,5 +103,7 @@ if __name__ == '__main__':
         test_autograd_multitimes()
     if 0:
         test_autograd_complex_graph()
-    if 1:
+    if 0:
         test_autograd_memory()
+    if 1:
+        test_autograd_no_grad()

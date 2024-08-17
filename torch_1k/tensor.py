@@ -1,7 +1,7 @@
 import numpy as np
 from .utils import ensure_ndarray
 from .log import log_function_call
-from .settings import log_settings, runtime_settings
+from .settings import log_settings, runtime_settings, using_config
 
 
 class Tensor:
@@ -25,7 +25,7 @@ class Tensor:
         self.grad = None
 
     @log_function_call(enabled=True)
-    def backward(self):
+    def backward(self, retain_grad=False):
         if self.grad is None:
             # print('one...')
             self.grad = np.ones_like(self.data)
@@ -61,6 +61,15 @@ class Tensor:
                 if x.creator is not None:
                     add_func(x.creator)
 
+            if not retain_grad:
+                # 默认不保留中间导数
+                if runtime_settings.get('remove_recursive_ref', True):
+                    for output in f.outputs:
+                        output().grad = None
+                else:
+                    for output in f.outputs:
+                        output.grad = None
+
     def shape(self):
         return self.data.shape
 
@@ -73,3 +82,6 @@ class Tensor:
             f'\n with grad={self.grad}'
         )
 
+
+def no_grad():
+    return using_config('enable_backprop', False)
