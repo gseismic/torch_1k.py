@@ -23,7 +23,7 @@ def log_function_call(enabled=True):
             result = func(self, *args, **kwargs)
 
             if should_log:
-                logger.info(f"\t\t{self.__class__.__name__}.{func.__name__} returned: {result}")
+                logger.debug(f"\t\t{self.__class__.__name__}.{func.__name__} returned: {result}")
 
             return result
         return wrapper

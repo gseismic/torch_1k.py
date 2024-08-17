@@ -49,3 +49,10 @@ class Exp(Function):
     def backward(self, gy):
         x = self.input.data
         return np.exp(x) * gy
+
+
+def square(x):
+    return Square()(x)
+
+def exp(x):
+    return Exp()(x)

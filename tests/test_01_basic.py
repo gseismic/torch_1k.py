@@ -4,6 +4,7 @@ import torch_1k
 from torch_1k import Tensor
 from torch_1k import Square, Exp
 torch_1k.log_settings['func_log_enabled'] = True
+torch_1k.log_settings['tensor_log_enabled'] = True
 
 
 def test_tensor_basic():
@@ -48,10 +49,10 @@ def test_backward():
     # print(x)
     # 2*x*exp(x**2)
     # print(x.grad, 2*x.data*np.exp(x.data**2))
-    assert x.grad == 2*x.data*np.exp(x.data**2)
+    assert np.allclose(x.grad, 2*x.data*np.exp(x.data**2))
 
 def test_auto_backward():
-    A = Square(log_enabled=False)
+    A = Square(log_enabled=True)
     B = Exp()
 
     # y = exp(x ** 2)
@@ -59,11 +60,13 @@ def test_auto_backward():
     a = A(x)
     y = B(a)
 
-    y.grad = np.array(1.0)
+    # y.grad = np.array(1.0)
     y.backward()
 
-    # print('by auto:', x.grad, 2*x.data*np.exp(x.data**2))
-    assert x.grad == 2*x.data*np.exp(x.data**2)
+    print('by auto:', x.grad, 2*x.data*np.exp(x.data**2))
+    # |x-y| < atol + rtol * |y|
+    assert np.allclose(x.grad, 2*x.data*np.exp(x.data**2), rtol=1e-5,
+                       atol=1e-8)
 
 
 if __name__ == '__main__':
