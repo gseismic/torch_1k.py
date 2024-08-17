@@ -9,7 +9,8 @@ class Square(Function):
         return x ** 2
 
     def backward(self, gy):
-        x = self.inputs[0].data
+        # x = self.inputs[0].data
+        x = self.inputs[0]
         return 2 * x * gy
 
 def square(x):
@@ -23,8 +24,10 @@ class Exp(Function):
         return np.exp(x)
 
     def backward(self, gy):
-        x = self.inputs[0].data
-        return np.exp(x) * gy
+        # x = self.inputs[0].data
+        x = self.inputs[0]
+        # return np.exp(x) * gy
+        return exp(x) * gy
 
 def exp(x):
     return Exp()(x)
@@ -74,7 +77,8 @@ class Mul(Function):
         return x1 * x2
 
     def backward(self, gy):
-        x1, x2 = self.inputs[0].data, self.inputs[1].data
+        # x1, x2 = self.inputs[0].data, self.inputs[1].data
+        x1, x2 = self.inputs[0], self.inputs[1]
         return x2*gy, x1*gy
 
 def mul(x1, x2):
@@ -86,7 +90,8 @@ class Div(Function):
         return x1 / x2
 
     def backward(self, gy):
-        x1, x2 = self.inputs[0].data, self.inputs[1].data
+        # x1, x2 = self.inputs[0].data, self.inputs[1].data
+        x1, x2 = self.inputs[0], self.inputs[1]
         return gy/x2, -gy*x1 / x2 ** 2
 
 def div(x1, x2):
@@ -106,7 +111,8 @@ class Pow(Function):
         return x ** self.c
 
     def backward(self, gy):
-        x = self.inputs[0].data
+        # x = self.inputs[0].data
+        x = self.inputs[0]
         c = self.c
         gx = c * x **(c-1) * gy
         return gx
@@ -120,8 +126,10 @@ class Sin(Function):
         return np.sin(x)
 
     def backward(self, gy):
-        x = self.inputs[0].data
-        gx = gy * np.cos(x)
+        # x = self.inputs[0].data
+        x = self.inputs[0]
+        # gx = gy * np.cos(x)
+        gx = gy * cos(x) # call Cos()(x)
         return gx
 
 def sin(x):
@@ -133,9 +141,25 @@ class Cos(Function):
         return np.cos(x)
 
     def backward(self, gy):
-        x = self.inputs[0].data
-        gx = gy * np.sin(x)
+        # x = self.inputs[0].data
+        x = self.inputs[0]
+        # gx = gy * np.sin(x)
+        gx = - gy * sin(x)
         return gx
 
 def cos(x):
     return Cos()(x)
+
+# Tanh
+class Tanh(Function):
+    def forward(self, x):
+        return np.tanh(x)
+
+    def backward(self, gy):
+        # 1 - y**2
+        y = self.outputs[0]()
+        gx = gy * (1 - y*y)
+        return gx
+
+def tanh(x):
+    return Tanh()(x)

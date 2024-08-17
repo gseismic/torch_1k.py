@@ -23,7 +23,7 @@ class Function:
         if not isinstance(ys, tuple):
             ys = (ys,)
 
-        # inputs 仅仅在反向传播时才需要，不反向传播时，不用保留
+        # `inputs` 仅仅在反向传播时才需要，不反向传播时，不用保留
         outputs = [tensor.Tensor(y) for y in ys]
         # print(Config.enable_backprop)
         if Config.enable_backprop:

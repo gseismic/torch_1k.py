@@ -2,7 +2,7 @@ import numpy as np
 from .utils import ensure_ndarray
 from .log import log_function_call
 from .settings import log_settings, runtime_settings, using_config
-from .ops import *
+from .functional import *
 #import networkx as nx
 #import matplotlib.pyplot as plt
 
@@ -63,14 +63,14 @@ class Tensor:
         self.grad = None
 
     @log_function_call(enabled=True)
-    def backward(self, retain_grad=False):
+    def backward(self, retain_grad=False, create_graph=False):
         if self.creator is None:
             # incaseof: x = Tensor(...); x.backward()
             return
 
         if self.grad is None:
-            # print('one...')
-            self.grad = np.ones_like(self.data)
+            # self.grad = np.ones_like(self.data)
+            self.grad = Tensor(np.ones_like(self.data))
 
         funcs = []
         set_funcs = set()
@@ -89,19 +89,25 @@ class Tensor:
                 gys = [output().grad for output in f.outputs]
             else:
                 gys = [output.grad for output in f.outputs]
-            gxs = f.backward(*gys)
-            if not isinstance(gxs, tuple):
-                gxs = (gxs, )
 
-            for x, gx in zip(f.inputs, gxs):
-                if x.grad is None:
-                    # in case of: y = x + x
-                    x.grad = gx
-                else:
-                    x.grad = x.grad + gx
+            # create_graph默认False: 默认单次backward后不需要再次反向传播了
+            # enable_backprop 为了: `inputs` 仅仅在反向传播时才需要，不反向传播时，不用保留
+            # 如果create_graph 为真，表示还需要导数值，所以
+            # print(create_graph)
+            with using_config('enable_backprop', create_graph):
+                gxs = f.backward(*gys)
+                if not isinstance(gxs, tuple):
+                    gxs = (gxs, )
 
-                if x.creator is not None:
-                    add_func(x.creator)
+                for x, gx in zip(f.inputs, gxs):
+                    if x.grad is None:
+                        # in case of: y = x + x
+                        x.grad = gx
+                    else:
+                        x.grad = x.grad + gx
+
+                    if x.creator is not None:
+                        add_func(x.creator)
 
             if not retain_grad:
                 # 默认不保留中间导数
@@ -131,8 +137,8 @@ class Tensor:
 
     def __repr__(self):
         return (
-            f'Tensor({str(self.data)})[name={self.name}]'
-            f'\n with grad={self.grad}'
+            f'Tensor({str(self.data)}, name={self.name}'
+            f',grad={self.grad})'
         )
 
 

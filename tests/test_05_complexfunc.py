@@ -2,7 +2,7 @@ import config
 import time
 import numpy as np
 import torch_1k
-from torch_1k import Tensor
+from torch_1k import Tensor, allclose
 from torch_1k import Square, Exp, Add, add, square
 
 
@@ -39,7 +39,7 @@ def test_complexfun_userdefine():
     y = fun(x1)
     y.backward()
     print(x1)
-    assert np.allclose(x1.grad, 3)
+    assert allclose(x1.grad, 3)
 
     def fun(x):
         t1 = 2*x + 5
@@ -50,7 +50,7 @@ def test_complexfun_userdefine():
     y = fun(x1)
     y.backward()
     print(x1)
-    assert np.allclose(x1.grad, 8)
+    assert allclose(x1.grad, 8)
 
 
 def test_complexfun_userdefine2():
@@ -62,7 +62,7 @@ def test_complexfun_userdefine2():
     y = fun(x1)
     y.backward()
     print(x1)
-    assert np.allclose(x1.grad, 3)
+    assert allclose(x1.grad, 3)
 
 if __name__ == '__main__':
     if 0:
