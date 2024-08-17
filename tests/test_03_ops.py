@@ -120,7 +120,6 @@ def test_ops_many():
     assert np.allclose(x2.grad, c * x2.data **(c-1))
 
 
-
 if __name__ == '__main__':
     if 0:
         test_ops_mul()

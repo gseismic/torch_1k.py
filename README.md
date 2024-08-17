@@ -12,5 +12,16 @@
 - [ ] optimizer优化模块: 实现Adam优化算法
 - [ ] 实现MLP神经网络，把torch替换为`torch_1k`可以做普通的mnist分类
 
+## 使用说明
+
+### 不允许覆盖自身
+如下代码错误
+```
+    x = Tensor(2.0, name="x")
+    x = x*x
+    x.backward()
+```
+
 ## ChangeLog
 - [@2024-08-17 19:43:46] create
+

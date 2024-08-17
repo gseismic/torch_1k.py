@@ -31,6 +31,10 @@ class Tensor:
 
     @log_function_call(enabled=True)
     def backward(self, retain_grad=False):
+        if self.creator is None:
+            # incaseof: x = Tensor(...); x.backward()
+            return
+
         if self.grad is None:
             # print('one...')
             self.grad = np.ones_like(self.data)
@@ -99,19 +103,23 @@ class Tensor:
         )
 
 
-Tensor.__neg__ = neg
+def register_ops():
+    Tensor.__neg__ = neg
 
-Tensor.__add__ = add
-Tensor.__radd__ = add
-Tensor.__sub__ = sub
-Tensor.__rsub__ = rsub
+    Tensor.__add__ = add
+    Tensor.__radd__ = add
+    Tensor.__sub__ = sub
+    Tensor.__rsub__ = rsub
 
-Tensor.__mul__ = mul
-Tensor.__rmul__ = mul
-Tensor.__truediv__ = div
-Tensor.__rtruediv__ = rdiv
+    Tensor.__mul__ = mul
+    Tensor.__rmul__ = mul
+    Tensor.__truediv__ = div
+    Tensor.__rtruediv__ = rdiv
 
-Tensor.__pow__ = pow
+    Tensor.__pow__ = pow
+
+
+register_ops()
 
 def no_grad():
     return using_config('enable_backprop', False)
