@@ -7,15 +7,15 @@
 - [x] Tensor类：支持不同维度下的广播
 - [x] 支持函数和复合函数的自动微分求导
 - [^] 实现常用函数sin,cos,exp,log,relu,softmax等
-- [ ] 实现神经网络Module
-- [ ] 实现Linear算子
-- [ ] optimizer优化模块: 实现Adam优化算法
+- [^] 实现神经网络Module
+- [^] 实现Linear算子
+- [^] optimizer优化模块: 实现Adam优化算法
 - [ ] 实现MLP神经网络，把torch替换为`torch_1k`可以做普通的mnist分类
 
 ## 使用说明
 例子2:
-[torch的结果](images/torch.png)
-[torch-1k的结果](images/torch_1k.png)
+![torch的结果](images/torch.png)
+![torch-1k的结果](images/torch_1k.png)
 
 ```
 import matplotlib.pyplot as plt
@@ -102,7 +102,7 @@ plt.legend()
 plt.show()
 ```
 
-例子2:
+例子1:
 ```
 import time
 import numpy as np
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 ```
 
 ## 参考资料
-- 《深度学习入门自制框架》斋藤康毅 著 郑明智翻
+- 《深度学习入门自制框架》斋藤康毅 著 郑明智译
 
 ## ChangeLog
 - [@2024-08-17] v0.0.1 create project
