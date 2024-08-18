@@ -33,18 +33,12 @@ class Pad(Function):
             n = (self.index_or_slices.stop - start)//step
         '''
         # x.shape 要和self.shape做self.index_or_slices后的大小已知
-        #print(f'{self.shape=}')
-        #print(f'{self.index_or_slices=}')
         y = self.value * np.ones(self.shape)
-        #print(f'{y=}')
         y[self.index_or_slices] = x
         return y
 
     def backward(self, gy):
-        #print(f'{gy=}', type(gy))
-        #print(type(self.index_or_slices))
         gx = gy[self.index_or_slices]
-        #print(f'{gx=}')
         return gx
 
 def pad(x, shape, index_or_slices, value=0):

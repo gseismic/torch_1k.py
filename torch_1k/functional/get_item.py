@@ -24,17 +24,6 @@ class GetItem(Function):
     def backward(self, gy):
         gx = pad(gy, self.x_shape, self.index_or_slices, 0)
         return gx
-        # equavilent
-        #mask = np.zeros(self.x_shape)
-        #print(f'{self.y_shape=}')
-        #print(f'{self.index_or_slices=}')
-        #mask[self.index_or_slices] = 1
-        #print(f'{mask=}')
-        #pad_gy = pad(gy, self.x_shape, self.index_or_slices, 0)
-        #print(f'{gy=}')
-        #print(f'{pad_gy=}')
-        #gx = tensor.Tensor(mask) * pad_gy
-        #return gx
 
 def get_item(x, index_or_slices):
     return GetItem(index_or_slices)(x)

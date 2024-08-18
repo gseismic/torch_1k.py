@@ -127,6 +127,39 @@ class Tensor:
     def transpose(self):
         return F.transpose(self)
 
+    def renamed(self, name):
+        self.name = name
+        return self
+
+    @classmethod
+    def _get_shape(cls, *shape):
+        if len(shape) == 1 and isinstance(shape[0], (tuple,list)):
+            shape = shape[0]
+        return shape
+
+    @classmethod
+    def randn(self, *shape):
+        shape = self._get_shape(shape)
+        return Tensor(np.zeros(shape))
+
+    @classmethod
+    def zeros(self, *shape):
+        shape = self._get_shape(shape)
+        return Tensor(np.zeros(shape))
+
+    @classmethod
+    def ones(self, *shape):
+        shape = self._get_shape(shape)
+        return Tensor(np.ones(shape))
+
+    @classmethod
+    def zeros_like(self, data):
+        return Tensor(np.zeros(data.shape))
+
+    @classmethod
+    def ones_like(self, data):
+        return Tensor(np.ones(data.shape))
+
     @property
     def T(self):
         '''
@@ -176,8 +209,6 @@ def register_ops():
     Tensor.__getitem__ = get_item
 
 
-register_ops()
-
 def no_grad():
     return using_config('enable_backprop', False)
 
@@ -192,5 +223,16 @@ def make_tensor(data):
 def allclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     a = ensure_tensor(a)
     b = ensure_tensor(b)
-    return np.allclose(a.data, b.data, rtol=rtol, atol=atol, equal_nan=equal_nan)
+    print('a----', a)
+    print('b----', b)
+    return a.shape == b.shape and np.allclose(a.data, b.data, rtol=rtol, atol=atol, equal_nan=equal_nan)
+
+def rand(*shape):
+    return Tensor(np.random.rand(*shape))
+
+def randn(*shape):
+    return Tensor(np.random.randn(*shape))
+
+def randint(*shape):
+    return Tensor(np.random.randint(*shape))
 

@@ -61,7 +61,7 @@ def test_ops_mixup():
     print(type(y))
     y.backward()
     print('x1', x1)
-    assert allclose(x1.grad, 2)
+    assert allclose(x1.grad, [2])
 
 def test_ops_many():
     # neg
@@ -123,7 +123,7 @@ def test_ops_many():
 if __name__ == '__main__':
     if 0:
         test_ops_mul()
-    if 0:
-        test_ops_mixup()
     if 1:
+        test_ops_mixup()
+    if 0:
         test_ops_many()

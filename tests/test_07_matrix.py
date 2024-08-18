@@ -31,6 +31,18 @@ def test_matrix_transpose():
     # print(W.T)
 
 def test_matrix_mul():
+    #x = Tensor([[2], [2]], name='x')
+    #W = Tensor([[1]], name='W')
+    x = Tensor([[2, 2]], name='x')
+    W = Tensor([[1], [2]], name='W')
+    y = F.matmul(x, W)
+    # y.backward(retain_grad=True)
+    y.backward()
+    print(f'{x=}')
+    print(f'{W=}')
+    print(f'{y=}')
+    # assert allclose(A.grad, [[1,1,1],[1,1,1]])
+
     x = Tensor(np.random.randn(2, 3), name='x')
     W = Tensor(np.random.randn(3, 5), name='W')
     y = F.matmul(x, W)
@@ -39,7 +51,6 @@ def test_matrix_mul():
     print(f'{y=}')
     print(f'{x=}')
     print(f'{W=}')
-    # assert allclose(A.grad, [[1,1,1],[1,1,1]])
 
 def test_matrix_mul2():
     x = Tensor(np.array([[2, 3]]), name='x')
@@ -164,7 +175,7 @@ if __name__ == '__main__':
         test_matrix_reshape()
     if 0:
         test_matrix_transpose()
-    if 0:
+    if 1:
         test_matrix_mul()
     if 0:
         test_matrix_mul2()
@@ -172,5 +183,5 @@ if __name__ == '__main__':
         test_matrix_npsumto()
     if 0:
         test_matrix_pad()
-    if 1:
+    if 0:
         test_matrix_getitem()
