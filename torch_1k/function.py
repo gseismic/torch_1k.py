@@ -1,10 +1,7 @@
 import numpy as np
 import weakref
-from . import tensor
-# from .tensor import Tensor
 from .log import log_function_call
 from .settings import log_settings, runtime_settings, Config
-from .utils import ensure_tensor
 
 
 class Function:
@@ -17,13 +14,15 @@ class Function:
         self.generation = None
 
     def __call__(self, *inputs):
-        inputs = [ensure_tensor(input) for input in inputs]
+        from . import tensor
+        inputs = [tensor.ensure_tensor(input) for input in inputs]
         xs = [input.data for input in inputs]
         ys = self.forward(*xs)
         if not isinstance(ys, tuple):
             ys = (ys,)
 
         # `inputs` 仅仅在反向传播时才需要，不反向传播时，不用保留
+        # outputs = [tensor.Tensor(y) for y in ys]
         outputs = [tensor.Tensor(y) for y in ys]
         # print(Config.enable_backprop)
         if Config.enable_backprop:

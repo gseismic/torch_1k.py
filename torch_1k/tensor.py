@@ -1,8 +1,9 @@
 import numpy as np
-from .utils import ensure_ndarray
+from . import utils
 from .log import log_function_call
 from .settings import log_settings, runtime_settings, using_config
 from . import functional as F
+from .functional.get_item import get_item
 #import networkx as nx
 #import matplotlib.pyplot as plt
 
@@ -13,7 +14,7 @@ class Tensor:
     __array_priority__ = 200
 
     def __init__(self, data, name=None, log_enabled=None):
-        self.data = ensure_ndarray(data)
+        self.data = utils.ensure_ndarray(data)
         self.name = name
         if log_enabled is None:
             self.log_enabled = log_settings.get('tensor_log_enabled', False)
@@ -154,8 +155,8 @@ class Tensor:
     def __repr__(self):
         return (
             f'Tensor({str(self.data)}, name={self.name}'
-            f', grad={self.grad})'
-        )
+            f', shape={self.shape}, grad={self.grad})'
+        ).replace('\n', '\n' + ' '*8)
 
 
 def register_ops():
@@ -172,9 +173,24 @@ def register_ops():
     Tensor.__rtruediv__ = F.rdiv
 
     Tensor.__pow__ = F.pow
+    Tensor.__getitem__ = get_item
 
 
 register_ops()
 
 def no_grad():
     return using_config('enable_backprop', False)
+
+def ensure_tensor(data):
+    if isinstance(data, Tensor):
+        return data
+    return Tensor(data)
+
+def make_tensor(data):
+    return Tensor(data)
+
+def allclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
+    a = ensure_tensor(a)
+    b = ensure_tensor(b)
+    return np.allclose(a.data, b.data, rtol=rtol, atol=atol, equal_nan=equal_nan)
+
