@@ -1,5 +1,6 @@
 import weakref
 from .parameter import Parameter
+from ..settings import Config, train_model, eval_model
 
 
 class Module:
@@ -7,8 +8,14 @@ class Module:
     def __init__(self):
         self._parameters = set()
 
+    def train(self):
+        train_model()
+
+    def eval(self):
+        eval_model()
+
     def __setattr__(self, name, value):
-        if isinstance(value, Parameter):
+        if isinstance(value, (Parameter, Module)):
             self._parameters.add(name)
         super().__setattr__(name, value)
 
@@ -36,4 +43,3 @@ class Module:
     def zero_grad(self):
         for parameter in self.self.parameters():
             parameter.zero_grad()
-

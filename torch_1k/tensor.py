@@ -93,9 +93,15 @@ class Tensor:
     def transpose(self):
         return F.transpose(self)
 
+    def sum(self):
+        return F.sum(self)
+
     def renamed(self, name):
         self.name = name
         return self
+
+    def numpy(self):
+        return self.data
 
     @classmethod
     def _get_shape(cls, *shape):
@@ -142,10 +148,23 @@ class Tensor:
     def ndim(self):
         return self.data.ndim
 
-    @property
-    def size(self):
+    def size(self, dim=None):
         # torch-like, 而不是self.data.size
-        return self.data.shape
+        if dim is None:
+            return self.data.shape
+        else:
+            return self.data.shape[dim]
+
+    def item(self):
+        assert len(self.data.shape) == 0
+        #print(type(self.data))
+        #print(self.data.value)
+        data = self.data
+        #print(type(data))
+        #print(type(data.item()))
+        #print(type(self.data), self.data)
+        #print(repr(self.data.item()))
+        return self.data.item()
 
     @property
     def dtype(self):
@@ -199,7 +218,3 @@ def randn(*shape):
 
 def randint(*shape):
     return Tensor(np.random.randint(*shape))
-
-def manual_seed(seed):
-    # use numpy random
-    np.random.seed(seed)

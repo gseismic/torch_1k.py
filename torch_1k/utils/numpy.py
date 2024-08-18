@@ -32,10 +32,12 @@ def np_sum_to(x, shape):
     # print(f' `np_sum_to` {x.shape} -> {shape}')
     num_dif_shapes = 0
     pos_dif_shapes = -1
-    for i_dim in range(len(x.shape)):
+    #for ii in range(len(x.shape)):
+    for ii, i_dim in enumerate(range(-1, -len(x.shape)-1, -1)):
         found = False
         if has_less_dims:
-            if i_dim >= len(shape):
+            # if i_dim >= len(shape):
+            if ii >= len(shape):
                 # 之前的dim都相同，但x多了1维
                 found = True
             elif x.shape[i_dim] != shape[i_dim]:
@@ -55,5 +57,5 @@ def np_sum_to(x, shape):
 
     # print(f'{num_dif_shapes, pos_dif_shapes=}')
     assert num_dif_shapes == 1, f'SumTo: BadShape: current shape:{x.shape}, target: {shape=}'
-
+    # axis = pos_dif_shapes
     return np.sum(x, axis=pos_dif_shapes, keepdims=not has_less_dims)

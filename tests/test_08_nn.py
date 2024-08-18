@@ -161,5 +161,5 @@ if __name__ == '__main__':
         test_nn_sum()
     if 0:
         test_nn_linear()
-    if 0:
+    if 1:
         test_nn_linear_regress()

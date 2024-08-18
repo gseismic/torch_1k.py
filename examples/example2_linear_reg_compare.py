@@ -6,8 +6,6 @@ use_torch_1k = False
 use_torch_1k = True
 ####################
 if use_torch_1k:
-    import config
-    # from torch_1k.facet import torch, nn, optim
     import torch_1k as torch
     import torch_1k.nn as nn
     import torch_1k.optim as optim
@@ -16,8 +14,11 @@ else:
     import torch
     import torch.nn as nn
     import torch.optim as optim
-    title = 'torch_1k'
+    title = 'torch'
 
+print('#####################################################')
+print(f'### Using {title=} ..')
+print('#####################################################')
 # 创建数据集
 torch.manual_seed(0)
 
@@ -77,4 +78,5 @@ plt.scatter(X.numpy(), y.numpy(), label='True Data')
 plt.plot(X.numpy(), predicted.numpy(), label='Fitted Line', color='r')
 plt.title(title)
 plt.legend()
+#plt.savefig(f"{title}.png")
 plt.show()

@@ -11,6 +11,7 @@ runtime_settings = {
 
 class Config:
     enable_backprop = True
+    train = True
 
 
 @contextlib.contextmanager
@@ -21,3 +22,12 @@ def using_config(name, value):
         yield
     finally:
         setattr(Config, name, old_value)
+
+
+def train_model():
+    Config.train = True
+    Config.enable_backprop = True
+
+def eval_model():
+    Config.train = False
+    Config.enable_backprop = False

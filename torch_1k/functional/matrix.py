@@ -41,6 +41,19 @@ def transpose(x):
     return Transpose()(x)
 
 
+# Unsqueeze: future
+class _Unsqueeze(Function):
+    # input: 输入的张量。
+    # dim: 要插入维度的位置，范围可以是 [-input.dim()-1, input.dim()]。
+    def __init__(self, dim):
+        self.dim = dim
+
+    def forward(self, x):
+        self.x_shape = x.shape
+        y = np.expand_dims(x, dim=self.dim)
+        return y
+
+
 # MatMul 
 class MatMul(Function):
 

@@ -7,9 +7,6 @@ from torch_1k import Tensor, allclose
 import torch_1k.nn as nn
 from torch_1k.optim import SGD
 
-
-
-
 def test_nn_optimizer():
     fc = nn.Linear(3, 2, bias=False)
     # x = np.array([[1],[1],[1]]) not allowed
