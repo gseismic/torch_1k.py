@@ -50,10 +50,6 @@ class Add(Function):
     def forward(self, x1, x2):
         self.x1_shape, self.x2_shape = x1.shape, x2.shape
         # 发生了隐式broadcast -> sum
-        #print('---add---')
-        #print('x1', repr(x1))
-        #print('x2', repr(x2))
-        #print(f'{x1.shape=}, {x2.shape=}')
         y = x1 + x2
         # self.broadcast_shape = y.shape
         return y
@@ -69,8 +65,6 @@ class Add(Function):
         # 与上面等价
         if self.x1_shape != self.x2_shape:
             x1, x2 = self.inputs
-            # print(f'sum----to: {self.x1_shape=}, {self.x2_shape=}')
-            # print(f'{x1=},\n {x2=}')
             gx1 = sum_to(gx1, self.x1_shape)
             gx2 = sum_to(gx2, self.x2_shape)
         return gx1, gx2

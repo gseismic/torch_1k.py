@@ -15,7 +15,6 @@ class Config:
 
 @contextlib.contextmanager
 def using_config(name, value):
-    # print('uss....', name, value)
     old_value = getattr(Config, name)
     setattr(Config, name, value)
     try:

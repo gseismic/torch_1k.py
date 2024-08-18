@@ -3,7 +3,6 @@ import weakref
 from .log import log_function_call
 from .settings import log_settings, runtime_settings, Config
 
-
 class Function:
 
     def __init__(self, log_enabled=None):
@@ -24,7 +23,6 @@ class Function:
         # `inputs` 仅仅在反向传播时才需要，不反向传播时，不用保留
         # outputs = [tensor.Tensor(y) for y in ys]
         outputs = [tensor.Tensor(y) for y in ys]
-        # print(Config.enable_backprop)
         if Config.enable_backprop:
             # 更新`代`, 为所有输入代的最大值
             self.generation = max([input.generation for input in inputs])

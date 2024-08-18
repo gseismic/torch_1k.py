@@ -29,37 +29,6 @@ class Tensor:
         self.creator = func
         self.generation = self.creator.generation + 1
 
-    def plot(self):
-        # future: TODO
-        import networkx as nx
-        import matplotlib.pyplot as plt
-
-        # 创建一个有向无环图
-        DAG = nx.DiGraph()
-
-        # 添加节点和边
-        DAG.add_edges_from([(1, 2), (1, 3), (3, 4), (4, 5), (2, 5)])
-
-        # 检查是否为DAG
-        print("Is DAG:", nx.is_directed_acyclic_graph(DAG))
-
-        # 使用 spring 布局绘制 DAG
-        pos = nx.spring_layout(DAG)
-
-        # 绘制节点
-        nx.draw_networkx_nodes(DAG, pos, node_size=700, node_color="lightgreen")
-
-        # 绘制边（使用箭头表示方向）
-        nx.draw_networkx_edges(DAG, pos, edgelist=DAG.edges(), arrowstyle="->", arrowsize=20)
-
-        # 绘制标签
-        nx.draw_networkx_labels(DAG, pos, font_size=20, font_family='sans-serif')
-
-        # 显示图形
-        plt.title("Directed Acyclic Graph (DAG)")
-        plt.axis('off')  # 关闭坐标轴
-        plt.show()
-
     def zero_grad(self):
         self.grad = None
 
@@ -84,17 +53,14 @@ class Tensor:
         add_func(self.creator)
         while funcs:
             f = funcs.pop() # pop the item with maximal generation
-            # weakref
-            # print(runtime_settings)
             if runtime_settings.get('remove_recursive_ref', True):
-                gys = [output().grad for output in f.outputs]
+                gys = [output().grad for output in f.outputs] # weakref used
             else:
                 gys = [output.grad for output in f.outputs]
 
             # create_graph默认False: 默认单次backward后不需要再次反向传播了
             # enable_backprop 为了: `inputs` 仅仅在反向传播时才需要，不反向传播时，不用保留
             # 如果create_graph 为真，表示还需要导数值，所以
-            # print(create_graph)
             with using_config('enable_backprop', create_graph):
                 gxs = f.backward(*gys)
                 if not isinstance(gxs, tuple):
@@ -223,8 +189,6 @@ def make_tensor(data):
 def allclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     a = ensure_tensor(a)
     b = ensure_tensor(b)
-    print('a----', a)
-    print('b----', b)
     return a.shape == b.shape and np.allclose(a.data, b.data, rtol=rtol, atol=atol, equal_nan=equal_nan)
 
 def rand(*shape):
@@ -236,3 +200,6 @@ def randn(*shape):
 def randint(*shape):
     return Tensor(np.random.randint(*shape))
 
+def manual_seed(seed):
+    # use numpy random
+    np.random.seed(seed)

@@ -37,7 +37,6 @@ def np_sum_to(x, shape):
         if has_less_dims:
             if i_dim >= len(shape):
                 # 之前的dim都相同，但x多了1维
-                # print('---extra')
                 found = True
             elif x.shape[i_dim] != shape[i_dim]:
                 # 之前的dim都相同，本dim发现不同

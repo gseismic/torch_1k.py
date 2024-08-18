@@ -136,7 +136,6 @@ def test_nn_linear_regress():
 
         W.zero_grad()
         b.zero_grad()
-
         loss.backward()
         #print('-'*50)
         #print(f'{W=}, \n{b=}, \n{loss=}')
@@ -148,14 +147,11 @@ def test_nn_linear_regress():
 
         if i % 100 == 0:
             print(f'{i}: loss={loss.data}, {W.data=}, {b.data=}')
-            import time
-            time.sleep(1.0)
 
     y_pred = model(x)
     plt.scatter(x, y_pred.data, color='g')
     plt.scatter(x, y_target, marker='x')
-
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
@@ -165,5 +161,5 @@ if __name__ == '__main__':
         test_nn_sum()
     if 0:
         test_nn_linear()
-    if 1:
+    if 0:
         test_nn_linear_regress()
