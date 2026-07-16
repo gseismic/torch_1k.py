@@ -1,37 +1,37 @@
 # torch-1k.py
-目标：1000行代码以内实现pytorch核心基本功能
+
 Implementing PyTorch's core basic functions within 1000 lines of code
-(仅为学习目的)
+(For learning purposes only)
 
-## 核心功能
-- [x] Tensor类：要求实现`按元素`的加、减、乘、除
-- [x] Tensor类：支持标量和Tensor相加
-- [x] Tensor类：支持不同维度下的广播
-- [x] 支持函数和复合函数的自动微分求导
-- [ ] 实现常用函数sin,cos,exp,log,relu,softmax等
-- [x] 实现神经网络Module
-- [x] 实现Linear算子
-- [x] optimizer优化模块: 实现Adam优化算法
-- [ ] 实现MLP神经网络，把torch替换为`torch_1k`可以做普通的mnist分类
+## Core Features
+- [x] Tensor: element-wise add, subtract, multiply, divide
+- [x] Tensor: scalar + Tensor support
+- [x] Tensor: broadcasting across different dimensions
+- [x] Autograd for functions and composite functions
+- [ ] Common functions: sin, cos, exp, log, relu, softmax, etc.
+- [x] Neural network `Module`
+- [x] `Linear` operator
+- [x] Optimizer: Adam algorithm
+- [ ] MLP neural network: drop-in replace `torch` with `torch_1k` for MNIST classification
 
-## 使用说明
-### 安装
+## Usage
+### Installation
 ```
 cd torch_1k
 pip install .
 ```
-### 代码demo
-例子2:
+### Code Demo
+Example 2:
 | Image 1 | Image 2 |
 |---------|---------|
-| ![torch的结果](images/torch.png) | ![torch-1k的结果](images/torch_1k.png) |
+| ![torch result](images/torch.png) | ![torch-1k result](images/torch_1k.png) |
 
-除了导入名区别，把torch改为`torch_1k`, 其他所有代码不变 (仅粗略实现极小一部分函数)
+Simply replace `torch` with `torch_1k`, all other code stays the same (only a minimal subset of functions is implemented).
 ```
 import matplotlib.pyplot as plt
 
 ############################
-# 在这里更改测试参数
+# change test parameters here
 #use_torch_1k = False
 use_torch_1k = True
 ############################
@@ -49,70 +49,66 @@ else:
 print('#####################################################')
 print(f'### Using {title=} ..')
 print('#####################################################')
-# 创建数据集
+# create dataset
 torch.manual_seed(0)
 
-# 输入数据 (100个样本)
+# input data (100 samples)
 X = torch.unsqueeze(torch.linspace(-10, 10, 100), dim=1)
 
-# 标签数据
+# labels
 true_w = 3
 true_b = 2
-y = true_w * X + true_b + torch.normal(0, 1, size=X.size())  # 加入少量噪声
+y = true_w * X + true_b + torch.normal(0, 1, size=X.size())  # add noise
 
 class LinearRegressionModel(nn.Module):
     def __init__(self):
         super(LinearRegressionModel, self).__init__()
-        self.linear = nn.Linear(1, 1)  # 输入特征维度为1，输出维度也为1
+        self.linear = nn.Linear(1, 1)
 
     def forward(self, x):
         return self.linear(x)
 
 model = LinearRegressionModel()
-# 定义损失函数和优化器
-criterion = nn.MSELoss()  # 均方误差损失
-optimizer = optim.SGD(model.parameters(), lr=0.01)  # 随机梯度下降优化器
+# loss and optimizer
+criterion = nn.MSELoss()
+optimizer = optim.SGD(model.parameters(), lr=0.01)
 
-# 训练模型
+# training
 epochs = 1000
 losses = []
 
 for epoch in range(epochs):
-    model.train()  # 设置模型为训练模式
+    model.train()
 
-    # 前向传播
+    # forward
     y_pred = model(X)
 
-    # 计算损失
+    # loss
     loss = criterion(y_pred, y)
     losses.append(loss.item())
 
-    # 反向传播和优化
-    optimizer.zero_grad()  # 清零梯度
-    loss.backward()  # 反向传播计算梯度
-    optimizer.step()  # 更新参数
+    # backward and optimize
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
-    # 每 100 次迭代打印一次损失
     if (epoch+1) % 50 == 0:
-        # print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.4f}')
         print(f'Epoch [{epoch+1}/{epochs}], Loss: {loss.item()}')
 
-
-# 模型评估
+# evaluation
 model.eval()
 with torch.no_grad():
     predicted = model(X)
 
-# 绘制数据和拟合直线
+# plot
 plt.scatter(X.numpy(), y.numpy(), label='True Data')
 plt.plot(X.numpy(), predicted.numpy(), label='Fitted Line', color='r')
 plt.title(title)
 plt.legend()
-#plt.savefig(f"{title}.png")
 plt.show()
 ```
 
-例子1:
+Example 1:
 ```
 import time
 import numpy as np
@@ -128,7 +124,6 @@ def run():
     y_target = 3*x + 1 + 0.3*np.random.rand(N, 1)
 
     W = Tensor.zeros(1, 1).renamed('W')
-    # b = Tensor.zeros(1).renamed('b') NOT-ALLOWED
     b = Tensor.zeros(1, 1).renamed('b')
 
     def model(x):
@@ -144,7 +139,6 @@ def run():
     lr = 0.1
     epochs = 1000
 
-    # x = Tensor.zeros(N, 1).renamed('x')
     for i in range(epochs):
         y_pred = model(x)
         loss = mean_squared_error(y_pred, y_target)
@@ -166,19 +160,21 @@ if __name__ == '__main__':
     run()
 ```
 
-## 注意事项
-### 不允许覆盖自身
-如下代码错误
+## Notes
+### Variable reuse is not allowed
+The following code is incorrect:
 ```
     x = Tensor(2.0, name="x")
     x = x*x
     x.backward()
 ```
 
-## 参考资料
-- 《深度学习入门自制框架》斋藤康毅 著 郑明智译
+## References
+- 《深度学习入门自制框架》
+- PyTorch official repository: https://github.com/pytorch/pytorch
+- Paszke, A. et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library. *NeurIPS 2019*.
 
 ## ChangeLog
 - [@2024-08-17] v0.0.1 create project
 - [@2024-08-18] v0.0.2
-- [@2024-08-19] v0.0.3 实现了基本功能: 核心代码1k, 测试代码1k 
+- [@2024-08-19] v0.0.3 core features implemented: 1k core code, 1k test code
